@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html dir="ltr" itemscope itemtype="http://schema.org/CreativeWork" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta itemprop="description" content="Base of the Monad. Hommage to everything. Inspired by Piero Manzoni. Domain name + website, 2012.">
+    <meta itemprop="image" content="https://socledumonad.com/image.png">
+    <meta itemprop="url" content="https://socledumonad.com/">
+    <meta name="description" content="Base of the Monad. Hommage to everything. Inspired by Piero Manzoni. Domain name + website, 2012.">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta property="fb:admins" content="509248955">
+    <meta property="og:description" content="Base of the Monad. Hommage to everything. Inspired by Piero Manzoni. Domain name + website, 2012.">
+    <meta property="og:image" content="https://socledumonad.com/image.png">
+    <meta property="og:image:height" content="342">
+    <meta property="og:image:width" content="342">
+    <meta property="og:title" content="Socle du Monad">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="http://socledumonad.com/">
+    <title itemprop="name" lang="fr">Socle du Monad</title>
+    <link rel="author" href="https://alexanderchristiaanjacob.com/">
+    <link rel="canonical" href="https://socledumonad.com/">
+    <style>
+        *{border:0;cursor:move;margin:0;outline:0;padding:0}
+        html{overflow:hidden}
+    </style>
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-6227584-61', 'auto');
+        ga('send', 'pageview');
+
+    </script>
+</head>
+<body>
+<script src="Three.js"></script>
+<script src="Detector.js"></script>
+<script src="Stats.js"></script>
+<script src="THREEx.KeyboardState.js"></script>
+<script src="THREEx.FullScreen.js"></script>
+<script src="THREEx.WindowResize.js"></script>
+<script src="https://maps.google.com/maps/api/js?v=3&amp;key=AIzaSyCxUIzdIlYnW8h8Gu_qKQEmf3Wpf7JTlQo"></script>
+<script src="GSVPano.js"></script>
+<script type="x-shader/x-vertex" id="vertexShader">
+varying vec3 vReflect;
+varying vec3 vRefract;
+
+void main() {
+    vec4 mPosition = objectMatrix * vec4( position, 1.0 );
+    vec3 nWorld = normalize( mat3( objectMatrix[0].xyz, objectMatrix[1].xyz, objectMatrix[2].xyz ) * normal );
+    vReflect = normalize( reflect( normalize( mPosition.xyz - cameraPosition ), nWorld ) );
+    vRefract = normalize( refract( normalize( mPosition.xyz - cameraPosition ), nWorld, 0.9 ) );
+    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+}
+</script>
+<script type="x-shader/x-vertex" id="fragmentShader">
+uniform float rAmount;
+uniform sampler2D texture;
+uniform sampler2D scaledTexture;
+varying vec3 vReflect;
+varying vec3 vRefract;
+
+void main(void) {
+    float PI = 3.14159265358979323846264;
+    float yaw = .5 - atan( vReflect.z, - vReflect.x ) / ( 2.0 * PI );
+    float pitch = .5 - asin( vReflect.y ) / PI;
+    vec3 color = texture2D( scaledTexture, vec2( yaw, pitch ) ).rgb * ( 1.0 - rAmount );
+    yaw = .5 - atan( vRefract.z, - vRefract.x ) / ( 2.0 * PI );
+    pitch = .5 - asin( vRefract.y ) / PI;
+    color += texture2D( texture, vec2( yaw, pitch ) ).rgb * rAmount;
+    gl_FragColor = vec4( color, 1.0 );
+}
+</script>
+<script>
+
+    navigator.geolocation.getCurrentPosition(success,error);
+
+    function success(position){
+
+        var locations = [
+            { lat: position.coords.latitude, lng: position.coords.longitude},// Current (agent).
+            { lat: 52.359802, lng: 4.884066 },// Rijksmuseum
+            { lat: -85.00001, lng: -54.150798 },// Ceremonial South Pole
+            //{ lat: 9.085239, lng: 123.272414 },// Ocean.
+            { lat: 51.178867, lng: -1.826085 },// Stonehenge.
+            { lat: 56.13274, lng: 9.022382 }, // Herning kunstmuseum (Herning, Ringkøbing, Denmark).
+            //{ lat: 41.890067, lng: 12.492527 },// Colosseum.
+            //{lat:41.890072,lng:12.4925342},// Colosseum.
+            //{ lat: 48.861507, lng: 2.333696 },// Louvre.
+            { lat: 28.608288, lng: -80.604284 },// NASA.
+            { lat: 38.897588, lng: -77.036491 },// White House.
+            { lat: 55.752675, lng: 37.622261 },// Red Square.
+            { lat: 51.652009, lng: 5.052271 },// Efteling.
+        ];
+
+        pos = locations[ Math.floor( Math.random() * locations.length ) ];
+        console.log(pos);
+        var myLatlng = new google.maps.LatLng( pos.lat, pos.lng );
+        init( myLatlng );
+    }
+
+    function error(position){
+
+        var locations = [
+            { lat: 52.359802, lng: 4.884066 },// Rijksmuseum
+            { lat: -85.00001, lng: -54.150798 },// Ceremonial South Pole
+            { lat: 9.085239, lng: 123.272414 },// Ocean.
+            { lat: 51.178867, lng: -1.826085 },// Stonehenge.
+            { lat: 56.13274, lng: 9.022382 }, // Herning kunstmuseum (Herning, Ringkøbing, Denmark).
+            { lat: 41.890067, lng: 12.492527 },// Colosseum.
+            { lat: 48.861507, lng: 2.333696 },// Louvre.
+            { lat: 28.608288, lng: -80.604284 },// NASA.
+            { lat: 38.897588, lng: -77.036491 },// White House.
+            { lat: 55.752675, lng: 37.622261 },// Red Square.
+            { lat: 51.652009, lng: 5.052271 },// Efteling.
+        ];
+
+        pos = locations[ Math.floor( Math.random() * locations.length ) ];
+        console.log(pos);
+        var myLatlng = new google.maps.LatLng( pos.lat, pos.lng );
+        init( myLatlng );
+    }
+
+
+    // MAIN
+    if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+    // standard global variables
+    var loader, mesh, uniforms;
+    var container, scene, camera, renderer, controls, stats;
+    var keyboard = new THREEx.KeyboardState();
+    var clock = new THREE.Clock();
+
+    // custom global variables
+    var mirrorCube, mirrorCubeCamera; // for mirror material
+    var mirrorSphere, mirrorSphereCamera; // for mirror material
+
+    // FUNCTIONS
+    function init(myLatlng)
+    {
+        // SCENE
+        scene = new THREE.Scene();
+        // CAMERA
+        var SCREEN_WIDTH = window.innerWidth, SCREEN_HEIGHT = window.innerHeight;
+        var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 1, FAR = 1100;
+        camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
+        scene.add(camera);
+        camera.position.set(0,0,300);
+        camera.lookAt(scene.position);
+        // RENDERER
+        renderer = new THREE.WebGLRenderer( {antialias:true} );
+        renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+        container = document.createElement( 'div' );
+        document.body.appendChild( container );
+        container.appendChild( renderer.domElement );
+        // EVENTS
+        THREEx.WindowResize(renderer, camera);
+        THREEx.FullScreen.bindKey({ charCode : 'm'.charCodeAt(0) });
+        // CONTROLS
+        controls = new THREE.TrackballControls( camera );
+
+        // LIGHT
+        var light = new THREE.PointLight(0xffffff);
+        light.position.set(0,250,0);
+        scene.add(light);
+
+        loadPanorama( myLatlng );
+
+        var shader = new THREE.ShaderMaterial( {
+            uniforms: {
+                texture: { type: 't', value: 0.0, texture: null },
+                scaledTexture: { type: 't', value: 1.0, texture: null },
+                rAmount: { type: 'f', value: 0.0 }
+            },
+            vertexShader: document.getElementById( 'vertexShader' ).textContent,
+            fragmentShader: document.getElementById( 'fragmentShader' ).textContent
+        } );
+
+        uniforms = THREE.UniformsUtils.clone( shader.uniforms );
+        var material = new THREE.ShaderMaterial( {
+            fragmentShader: shader.fragmentShader,
+            vertexShader: shader.vertexShader,
+            uniforms: uniforms
+        } );
+
+        mesh = new THREE.Mesh( new THREE.SphereGeometry( 500, 60, 40 ), new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'white.png' ) } ) );
+        mesh.scale.x = -1;
+        mesh.receiveShadow = true;
+        scene.add( mesh );
+
+        ////////////
+        // CUSTOM //
+        ////////////
+
+        // must enable shadows on the renderer
+        renderer.shadowMapEnabled = true;
+
+        var spotlight = new THREE.SpotLight(0xffff00);
+        spotlight.position.set(0,200,0);
+        spotlight.shadowCameraVisible = false;
+        spotlight.shadowDarkness = 0.5;
+        spotlight.intensity = 0.2;
+        spotlight.castShadow = true;
+        scene.add(spotlight);
+
+        var cubeGeom = new THREE.CubeGeometry(100, 100, 100, 1, 1, 1);
+        mirrorCubeCamera = new THREE.CubeCamera( 1, 5000, 512 );
+        // mirrorCubeCamera.renderTarget.minFilter = THREE.LinearMipMapLinearFilter;
+        scene.add( mirrorCubeCamera );
+        var crateTexture = new THREE.ImageUtils.loadTexture( 'front.png' );
+        var mirrorCubeMaterial = new THREE.MeshBasicMaterial( { map: crateTexture, envMap: mirrorCubeCamera.renderTarget } );
+        mirrorCube = new THREE.Mesh( cubeGeom, mirrorCubeMaterial );
+        mirrorCube.position.set(0,0,0);
+        mirrorCubeCamera.position = mirrorCube.position;
+        mirrorCube.castShadow = false;
+        mirrorCube.receiveShadow = false;
+        scene.add(mirrorCube);
+
+        animate();
+
+    }
+
+    function animate()
+    {
+        requestAnimationFrame( animate );
+        render();
+        update();
+    }
+
+    function update()
+    {
+        controls.update();
+    }
+
+    function render()
+    {
+        mirrorCube.visible = false;
+        mirrorCubeCamera.updateCubeMap( renderer, scene );
+        mirrorCube.visible = true;
+
+        renderer.render( scene, camera );
+    }
+
+
+    function loadPanorama( location ) {
+        loader = new GSVPANO.PanoLoader( {
+            useWebGL: false
+        } );
+
+        loader.onPanoramaLoad = function() {
+
+            mesh.material.map = new THREE.Texture( this.canvas );
+            mesh.material.map.needsUpdate = true;
+            //mesh.receiveShadow = true;
+
+            var canvas = document.createElement( 'canvas' );
+            var s = 10;
+            canvas.width = this.canvas.width / s;
+            canvas.height = this.canvas.height / s;
+            var ctx = canvas.getContext( '2d' );
+            ctx.drawImage( this.canvas, 0, 0, this.canvas.width, this.canvas.height, 0, 0, canvas.width, canvas.height );
+
+            uniforms[ 'texture' ].texture = new THREE.Texture( this.canvas );
+            uniforms[ 'texture' ].texture.needsUpdate = true;
+            uniforms[ 'scaledTexture' ].texture = new THREE.Texture( canvas );
+            uniforms[ 'scaledTexture' ].texture.needsUpdate = true;
+
+        };
+
+        loader.load( location );
+    }
+
+</script>
+</body>
+</html>
