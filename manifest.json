@@ -1,0 +1,17 @@
+{
+    "manifest_version": 2,
+    "version": "20190721",
+    "name": "Socle du Monad",
+    "default_locale": "en",
+    "description": "Base of the Monad. Hommage to everything. Inspired by Piero Manzoni. Domain name + website, 2012.",
+    "author": "Alexander Christiaan Jacob",
+    "theme_color": "white",
+    "homepage_url": "https://socledumonad.com/",
+    "start_url": "https://socledumonad.com/",
+    "icons": [
+        {
+            "src": "https://socledumonad.com/front.png"
+        }
+    ],
+    "display": "fullscreen"
+}
