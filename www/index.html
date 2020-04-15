@@ -100,6 +100,9 @@ void main(void) {
 }
 </script>
 <script>
+    "use strict";
+
+    var pos;
 
     navigator.geolocation.getCurrentPosition(success,error);
 
@@ -122,7 +125,6 @@ void main(void) {
         ];
 
         pos = locations[ Math.floor( Math.random() * locations.length ) ];
-        console.log(pos);
         var myLatlng = new google.maps.LatLng( pos.lat, pos.lng );
         init( myLatlng );
     }
@@ -144,7 +146,6 @@ void main(void) {
         ];
 
         pos = locations[ Math.floor( Math.random() * locations.length ) ];
-        console.log(pos);
         var myLatlng = new google.maps.LatLng( pos.lat, pos.lng );
         init( myLatlng );
     }
@@ -160,7 +161,6 @@ void main(void) {
 
     // custom global variables
     var mirrorCube, mirrorCubeCamera; // for mirror material
-    var mirrorSphere, mirrorSphereCamera; // for mirror material
 
     // FUNCTIONS
     function init(myLatlng)
@@ -244,7 +244,6 @@ void main(void) {
         scene.add(mirrorCube);
 
         animate();
-
     }
 
     function animate()
@@ -291,7 +290,6 @@ void main(void) {
             uniforms[ 'texture' ].texture.needsUpdate = true;
             uniforms[ 'scaledTexture' ].texture = new THREE.Texture( canvas );
             uniforms[ 'scaledTexture' ].texture.needsUpdate = true;
-
         };
 
         loader.load( location );
