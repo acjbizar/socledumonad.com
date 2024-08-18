@@ -1,0 +1,19 @@
+{
+    "$schema": "https:\/\/json.schemastore.org\/web-manifest-combined.json",
+    "lang": "fr",
+    "dir": "ltr",
+    "name": "Socle du Monad",
+    "display": "standalone",
+    "icons": [
+        {
+            "src": "https://socledumonad.com/front.png",
+            "sizes": "500x500",
+            "type": "image/png"
+        }
+    ],
+    "start_url": ".",
+    "scope": "/",
+    "id": "https://socledumonad.com/",
+    "theme_color": "white",
+    "background_color": "black"
+}
